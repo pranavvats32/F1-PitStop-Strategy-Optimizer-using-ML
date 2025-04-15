@@ -18,6 +18,45 @@ FastF1 is the best dataset for this project, it is also used by the F1 teams asw
 
 Will update the readme as i keep working.
 
+f1_strategy_optimizer/
+├── data/                        # Pull + clean race data
+│   ├── fetch_fastf1.py          # Uses FastF1 to pull telemetry, laps
+│   ├── fetch_ergast.py          # Uses Ergast API for race results, temps
+│   ├── race_filter.py           # Filter dry races, top finishers only
+│   └── cache_manager.py         # Cache control (optional)
+│
+├── features/
+│   ├── lap_features.py          # Extract per-lap features (pace, tyre life)
+│   ├── race_features.py         # Aggregate race-level features
+│   └── utils.py                 # Shared feature logic
+│
+├── models/
+│   ├── regressors.py            # LapTime predictors (Linear, RF, XGB)
+│   ├── advanced_models.py       # Sequence models, RL, AutoML, etc.
+│   ├── train.py                 # Model training pipeline
+│   └── evaluation.py            # MAE, R2, strategy accuracy
+│
+├── simulator/
+│   ├── simulator.py             # Lap-by-lap simulation using model
+│   ├── strategy_generator.py    # Create valid strategy sets
+│   └── recommender.py           # Return top-k strategies
+│
+├── visuals/
+│   └── plots.py                 # Lap trends, strategy comparison
+│
+├── notebooks/                  # Dev & EDA notebooks
+│   ├── StrategyExploration.ipynb
+│   └── ModelTesting.ipynb
+│
+├── config/
+│   └── settings.yaml            # Constants like race years, compounds, thresholds
+│
+├── cli/ (optional)             # For running it from terminal or scripts
+├── README.md
+├── requirements.txt
+└── setup.py
+
+
 References:
 
 https://docs.fastf1.dev/
