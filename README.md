@@ -1,32 +1,119 @@
-# F1-PitStop-Strategy-Optimizer-using-ML
+# F1 Pit Stop Strategy Optimizer using ML
 
-Data Acquired from [FastF1](https://docs.fastf1.dev/) api as well as [Ergast](https://ergast.com/mrd/) API
+**Author:** Pranav Vats  
+**Repo:** [github.com/pranavvats32/F1-PitStop-Strategy-Optimizer-using-ML](https://github.com/pranavvats32/F1-PitStop-Strategy-Optimizer-using-ML)
 
-Attempted Data exploration for Monaco 2023, to search for features which influence pitspot, monaco 2023 data is complex and skewed, the model is not confident (MLP).
+---
 
-(Early rain in the race leading to tyre compound switch  to wets or inters and early pitstops)
+## 🏎️ Overview
+This project is a predictive race strategy engine for Formula 1, built using 5 years of FastF1 telemetry and Ergast data. It models lap-by-lap performance based on tyre degradation and simulates pit stop strategies to recommend the fastest options.
 
-(The time difference between the dry compounds is negligible as the track is shorter with many curves and smaller straights )
+Inspired by PitGenius, but with custom features, driver-focused modeling, and strategy simulation logic.
 
-Moving to a different race data to make specific model for optimised pitstop prediction.
+---
 
-The project in its completion should be able to give optimized pitspot strategy for each track, based on the historial data present.
+## 📦 Features
 
-Feature selection seems of the utmost importance here as alot of features are invovled.
+### Data Sources:
+- FastF1 (Lap times, compounds, stints, telemetry)
+- Ergast API (Race results, weather, podium detection)
 
-FastF1 is the best dataset for this project, it is also used by the F1 teams aswell.
+### Key Modules:
+- `data/`: Ingest FastF1 and Ergast data
+- `features/`: Extract lap-level and race-level features
+- `models/`: Train baseline and advanced models (Linear, RF, XGB, LSTM, AutoML)
+- `simulator/`: Simulate strategies lap-by-lap
+- `visuals/`: Plot real vs simulated race timelines
 
-Will update the readme as i keep working.
+### Strategy Features:
+- 📈 Tyre pace (`LapTime_sec`)
+- 🧊 Warmup effect (`IsFreshTyre`)
+- 🔻 Degradation rate (`DegradationPerLap`)
+- ⏱️ Performance and wear life
+- 🕓 Pit stop duration
 
+---
 
-References:
+## 🧪 Example: Predict Strategy for 2024 Bahrain GP
 
-https://docs.fastf1.dev/
+```python
+from simulator.recommender import recommend_strategies
+from visuals.plots import plot_strategy_laps
 
-https://ergast.com/mrd/
+# Load trained model
+model = joblib.load("models/saved/RandomForest.pkl")
 
-https://motorsportengineer.net/how-pit-stop-strategy-leads-to-victories-in-formula-1/
+# Recommend top 3 strategies
+top_strats = recommend_strategies(model, top_n=3, race_laps=57)
 
-https://motorsportengineer.net/how-race-strategy-works-in-formula-1/#:~:text=The%20decision%20of%20when%20to,on%20opportunities%20or%20mitigate%20risks.
+# Visualize them
+plot_strategy_laps(top_strats)
+```
 
-https://www.youtube.com/watch?v=2PUz2EvbHRw
+---
+
+## 🔧 Setup
+```bash
+git clone https://github.com/pranavvats32/F1-PitStop-Strategy-Optimizer-using-ML.git
+cd F1-PitStop-Strategy-Optimizer-using-ML
+
+pip install -r requirements.txt
+```
+
+Make sure to run:
+```python
+import fastf1
+fastf1.Cache.enable_cache('cache')
+```
+
+---
+
+## 🧠 Models Included
+- `LinearRegression`
+- `RandomForestRegressor`
+- `XGBoostRegressor`
+- `LSTM (Keras)`
+- `FLAML AutoML`
+
+All models predict lap time based on compound, tyre age, stint length, and degradation.
+
+---
+
+## 📊 Strategy Simulator
+Simulates any given strategy like:
+```python
+[('SOFT', 17), ('HARD', 20), ('SOFT', 20)]
+```
+And returns:
+- Total predicted race time
+- Lap-by-lap prediction
+- Visual strategy comparison
+
+---
+
+## 📈 Visual Output
+![Example Plot](path/to/example_plot.png)  
+_Compare lap-by-lap lap times across strategies_
+
+---
+
+## 📋 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 💬 Want to Contribute?
+Open an issue or drop a PR! Contributions for strategy optimization logic, race weather models, or circuit-specific tuning are welcome.
+
+---
+
+## 🏁 Future Roadmap
+- [ ] Streamlit app for race selection and strategy comparison
+- [ ] Circuit-specific model tuning
+- [ ] Reinforcement learning-based pit timing
+- [ ] Include track temperature and fuel load in modeling
+
+---
+
+Built with ❤️ and race fuel by [@pranavvats32](https://github.com/pranavvats32)
+
