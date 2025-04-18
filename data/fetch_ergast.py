@@ -35,20 +35,30 @@ def get_race_results(year):
 
     return pd.DataFrame(all_results)
 
-def fetch_all_race_results(start=2019, end=2024, top_n=3):
-    all_years = []
+
+def fetch_race_results_for_one_gp(race_name="Bahrain Grand Prix", start=2019, end=2024, top_n=3):
+    filtered_years = []
 
     for year in range(start, end + 1):
         print(f"Fetching {year} race results from Ergast...")
         df = get_race_results(year)
-        top_finishers = df[df['position'] <= top_n]
-        all_years.append(top_finishers)
 
-    result_df = pd.concat(all_years).reset_index(drop=True)
+        # Match only the desired GP name
+        match = df[df['raceName'].str.contains(race_name, case=False, regex=False)]
+
+        if match.empty:
+            print(f"⚠️ {race_name} not found in {year}")
+            continue
+
+        top_finishers = match[match['position'] <= top_n]
+        filtered_years.append(top_finishers)
+
+    result_df = pd.concat(filtered_years).reset_index(drop=True)
     return result_df
 
 
-#usage example
-#from data.fetch_ergast import fetch_all_race_results
-# Get podium finishers from 2019 to 2024
-#podium_df = fetch_all_race_results(top_n=3)
+#example usage
+#from data.fetch_ergast import fetch_race_results_for_one_gp
+
+#podium_df = fetch_race_results_for_one_gp(race_name="Bahrain Grand Prix", start=2019, end=2024)
+
