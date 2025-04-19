@@ -24,7 +24,7 @@ Inspired by PitGenius, but with custom features, driver-focused modeling, and st
 - `models/`: Train baseline and advanced models (Linear, RF, XGB, LSTM, AutoML)
 - `simulator/`: Simulate strategies lap-by-lap
 - `visuals/`: Plot real vs simulated race timelines
-fast
+
 ### Strategy Features:
 - 📈 Tyre pace (`LapTime_sec`)
 - 🧊 Warmup effect (`IsFreshTyre`)
