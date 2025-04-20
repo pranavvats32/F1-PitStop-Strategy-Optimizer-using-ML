@@ -1,0 +1,14 @@
+# Ignore race lap and cache files
+*.pkl
+*.sqlite
+cache/
+data/race_laps/
+data/ergast/
+__pycache__/
+.ipynb_checkpoints/
+*.log
+*.DS_Store
+.env
+
+# VS Code config (optional)
+.vscode/

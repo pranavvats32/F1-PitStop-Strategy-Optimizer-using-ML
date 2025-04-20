@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from tqdm import tqdm
 
+# Ensure cache directory exists
+os.makedirs('cache', exist_ok=True)
 fastf1.Cache.enable_cache('cache')  # Enables caching to avoid repeated downloads
 
 def fetch_race_laps(race_name='Bahrain Grand Prix', years=[2019, 2020, 2021, 2022, 2023, 2024], session_type='R', save_dir='data/race_laps'):

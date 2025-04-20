@@ -36,12 +36,17 @@ def get_race_results(year):
     return pd.DataFrame(all_results)
 
 
-def fetch_race_results_for_one_gp(race_name="Bahrain Grand Prix", start=2019, end=2024, top_n=3):
+def fetch_race_results_for_one_gp(race_name="Bahrain Grand Prix", start=2019, end=2024, top_n=5):
     filtered_years = []
 
     for year in range(start, end + 1):
         print(f"Fetching {year} race results from Ergast...")
         df = get_race_results(year)
+
+        # 🛡️ Skip if race is missing or empty
+        if df.empty or 'position' not in df.columns:
+            print(f"⚠️ Skipping {year} — no valid race data found.")
+            continue
 
         # Match only the desired GP name
         match = df[df['raceName'].str.contains(race_name, case=False, regex=False)]
@@ -53,8 +58,13 @@ def fetch_race_results_for_one_gp(race_name="Bahrain Grand Prix", start=2019, en
         top_finishers = match[match['position'] <= top_n]
         filtered_years.append(top_finishers)
 
+    if not filtered_years:
+        print("❌ No matching race data found across years.")
+        return pd.DataFrame()
+
     result_df = pd.concat(filtered_years).reset_index(drop=True)
     return result_df
+
 
 
 #example usage
