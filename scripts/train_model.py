@@ -1,5 +1,6 @@
 import os
 import sys
+import pickle
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
@@ -58,8 +59,9 @@ models = {
 if xgb_installed:
     models['XGBoost'] = XGBRegressor(n_estimators=100, random_state=42)
 
-# Train + Evaluate
+# Train + Evaluate + Save
 results = {}
+os.makedirs("models", exist_ok=True)
 
 for name, model in models.items():
     model.fit(X_train, y_train)
@@ -74,7 +76,13 @@ for name, model in models.items():
     print(f"  MAE: {results[name]['MAE']:.3f}")
     print(f"  R²:  {results[name]['R2']:.3f}")
 
-# Save predictions
+    # ✅ Save model to models/{name}_model.pkl
+    model_path = f"models/{name.lower()}_model.pkl"
+    with open(model_path, "wb") as f:
+        pickle.dump(model, f)
+    print(f"✅ Saved {name} model to {model_path}")
+
+# Save predictions from Random Forest
 df_preds = X_test.copy()
 df_preds['Actual'] = y_test
 df_preds['Predicted_RF'] = models['RandomForest'].predict(X_test)

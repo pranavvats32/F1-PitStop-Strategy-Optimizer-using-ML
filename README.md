@@ -114,6 +114,23 @@ Open an issue or drop a PR! Contributions for strategy optimization logic, race 
 - [ ] Include track temperature and fuel load in modeling
 
 ---
+🛠️ Future Work: Pit Stop Penalty Scoring
+In future updates, the strategy simulator will support custom scoring modes with optional pit stop penalties, including:
+
+--scoring balanced: Use raw total time (default)
+
+--scoring conservative: Penalize extra pit stops (e.g., +5s per stop)
+
+--scoring robust: Factor in lap time variance and stop risk
+
+This will allow better strategy differentiation on:
+
+High-degradation circuits
+
+Tracks with long pit lanes
+
+Variable pit crew performance
+
 
 Built with ❤️ and race fuel by [@pranavvats32](https://github.com/pranavvats32)
 
