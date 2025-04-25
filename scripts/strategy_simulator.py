@@ -26,7 +26,7 @@ with open(model_path, "rb") as f:
 # Load lap data
 df = pd.read_pickle("data/model_input/bahrain_top5_laps_2019_2024.pkl")
 
-# Filter + clean
+# Clean
 df = df[df['LapTime'].notnull()]
 df = df[~df['PitInTime'].notnull()]
 df = df[~df['PitOutTime'].notnull()]
@@ -38,10 +38,8 @@ df.loc[:, 'IsFreshTyre'] = df['FreshTyre'].fillna(False).astype(int)
 df.loc[:, 'TyreAge'] = df['TyreLife']
 df.loc[:, 'CompoundEncoded'] = df['Compound'].astype('category').cat.codes
 
-# Feature columns
 features = ['Stint', 'TyreAge', 'IsFreshTyre', 'CompoundEncoded', 'Position']
 
-# Define strategies
 strategies = {
     "Soft → Hard": [('SOFT', 17), ('HARD', 40)],
     "Hard → Soft": [('HARD', 35), ('SOFT', 22)],
@@ -49,7 +47,6 @@ strategies = {
 }
 
 compound_map = {'SOFT': 0, 'MEDIUM': 1, 'HARD': 2}
-
 compound_colors = {
     'SOFT': '#FF3333',
     'MEDIUM': '#FFD700',
@@ -65,7 +62,7 @@ def simulate_strategy(strategy_name, base_position=1):
     stint_num = 0
     lap_number = 1
 
-    for compound, length in strategy:
+    for i, (compound, length) in enumerate(strategy):
         for _ in range(length):
             row = {
                 'Stint': stint_num,
@@ -74,10 +71,7 @@ def simulate_strategy(strategy_name, base_position=1):
                 'CompoundEncoded': compound_map.get(compound, -1),
                 'Position': base_position
             }
-            base_time = model.predict(pd.DataFrame([row]))[0]
-
-            degradation_factor = 1 + (0.003 * tyre_age)
-            pred_time = base_time * degradation_factor
+            pred_time = model.predict(pd.DataFrame([row]))[0]
             total_time += pred_time
 
             lap_predictions.append({
@@ -92,36 +86,38 @@ def simulate_strategy(strategy_name, base_position=1):
             tyre_age += 1
             lap_number += 1
 
-        # Pit stop (adds time to race, but not to scoring anymore)
-        total_time += 20
-        lap_predictions.append({
-            'Strategy': strategy_name,
-            'Lap': lap_number,
-            'Stint': stint_num,
-            'Compound': 'PIT',
-            'TyreAge': 0,
-            'PredictedTime_sec': 20.0
-        })
-        lap_number += 1
-        tyre_age = 0
+        # Add pit stop time if not the final stint
+        if i < len(strategy) - 1:
+            total_time += 20
+            lap_predictions.append({
+                'Strategy': strategy_name,
+                'Lap': lap_number,
+                'Stint': stint_num,
+                'Compound': 'PIT',
+                'TyreAge': 0,
+                'PredictedTime_sec': 20.0
+            })
+            lap_number += 1
+            tyre_age = 0
+
         stint_num += 1
 
     return round(total_time, 2), lap_predictions
 
-# Run simulations
+# Run simulation
 print(f"\n🏎️ Strategy Simulation using model: {model_name.capitalize()}\n")
 all_laps = []
-results = []
-
+scores = []
 best_strategy = None
 best_time = float("inf")
+best_laps = []
 
 for strat in strategies:
     total_time, laps = simulate_strategy(strat)
-
     print(f"→ {strat}: {total_time:.2f} sec")
+
     all_laps.extend(laps)
-    results.append((strat, total_time))
+    scores.append((strat, total_time))
 
     if total_time < best_time:
         best_time = total_time
@@ -130,7 +126,7 @@ for strat in strategies:
 
 print(f"\n🏁 Best strategy: {best_strategy} ({best_time:.2f} sec)")
 
-# Save output
+# Save outputs
 os.makedirs("outputs", exist_ok=True)
 pd.DataFrame(all_laps).to_csv("outputs/strategy_lap_predictions.csv", index=False)
 pd.DataFrame(best_laps).to_csv("outputs/best_strategy_lap_times.csv", index=False)
@@ -147,3 +143,8 @@ plt.tight_layout()
 plt.savefig("outputs/strategy_plot.png")
 plt.close()
 print("📊 Lap time plot saved to outputs/strategy_plot.png")
+
+#example usecase
+#python scripts/strategy_simulator.py --model randomforest
+#python scripts/strategy_simulator.py --model linearregression
+#python scripts/strategy_simulator.py --model xgboost
