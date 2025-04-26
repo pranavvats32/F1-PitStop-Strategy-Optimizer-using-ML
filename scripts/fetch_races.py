@@ -13,3 +13,4 @@ if __name__ == "__main__":
         session_type='R',
         save_dir="data/race_laps"
     )
+    print("\n✅ FastF1 race data fetching complete!")

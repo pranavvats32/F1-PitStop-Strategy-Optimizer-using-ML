@@ -32,3 +32,5 @@ else:
     output_path = os.path.join(save_dir, "bahrain_top5_finishers.csv")
     top5_df.to_csv(output_path, index=False)
     print(f"✅ Saved CSV to: {output_path}")
+
+print("\n✅ Ergast fetch script completed!")

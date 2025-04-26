@@ -7,6 +7,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 
+print("🏎️ Starting model training...")
+
 # Optional: Try importing XGBoost
 try:
     from xgboost import XGBRegressor
@@ -90,3 +92,5 @@ df_preds['Predicted_RF'] = models['RandomForest'].predict(X_test)
 os.makedirs("outputs", exist_ok=True)
 df_preds.to_csv("outputs/rf_predictions.csv", index=False)
 print("\n✅ Saved predictions to: outputs/rf_predictions.csv")
+
+print("\n✅ All models trained and saved successfully!")

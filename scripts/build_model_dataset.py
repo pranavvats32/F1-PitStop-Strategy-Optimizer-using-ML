@@ -3,6 +3,8 @@ import pandas as pd
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+print("🛠️ Starting to build the model dataset...\n")
+
 # Paths
 LAPS_DIR = "data/race_laps"
 ERGAST_CSV = "data/ergast/bahrain_top5_finishers.csv"

@@ -6,61 +6,35 @@
 ---
 
 ## 🏎️ Overview
-This project is a predictive race strategy engine for Formula 1, built using 5 years of FastF1 telemetry and Ergast data. It models lap-by-lap performance based on tyre degradation and simulates pit stop strategies to recommend the fastest options.
-
-Inspired by PitGenius, but with custom features, driver-focused modeling, and strategy simulation logic.
-
----
-
-## 📦 Features
-
-### Data Sources:
-- FastF1 (Lap times, compounds, stints, telemetry)
-- Ergast API (Race results, weather, podium detection)
-
-### Key Modules:
-- `data/`: Ingest FastF1 and Ergast data
-- `features/`: Extract lap-level and race-level features
-- `models/`: Train baseline and advanced models (Linear, RF, XGB, LSTM, AutoML)
-- `simulator/`: Simulate strategies lap-by-lap
-- `visuals/`: Plot real vs simulated race timelines
-
-### Strategy Features:
-- 📈 Tyre pace (`LapTime_sec`)
-- 🧊 Warmup effect (`IsFreshTyre`)
-- 🔻 Degradation rate (`DegradationPerLap`)
-- ⏱️ Performance and wear life
-- 🕓 Pit stop duration
+A predictive F1 race strategy simulator that models lap-by-lap tyre performance and simulates pit stop strategies.  
+Built using FastF1 telemetry data and Ergast API race results for Bahrain GP (2019–2024).
 
 ---
 
-## 🧪 Example: Predict Strategy for 2024 Bahrain GP
+## 📦 Project Structure
 
-```python
-from simulator.recommender import recommend_strategies
-from visuals.plots import plot_strategy_laps
-
-# Load trained model
-model = joblib.load("models/saved/RandomForest.pkl")
-
-# Recommend top 3 strategies
-top_strats = recommend_strategies(model, top_n=3, race_laps=57)
-
-# Visualize them
-plot_strategy_laps(top_strats)
-```
+| Folder | Purpose |
+|:------|:--------|
+| `data/` | Fetch FastF1 + Ergast data |
+| `models/` | Trained ML models (Linear, Random Forest, XGBoost) |
+| `outputs/` | Simulation outputs and plots |
+| `scripts/` | Runnable Python scripts for full pipeline |
 
 ---
 
 ## 🔧 Setup
+
 ```bash
 git clone https://github.com/pranavvats32/F1-PitStop-Strategy-Optimizer-using-ML.git
 cd F1-PitStop-Strategy-Optimizer-using-ML
 
+conda create -n f1-strategy python=3.10
+conda activate f1-strategy
 pip install -r requirements.txt
 ```
 
-Make sure to run:
+Initialize FastF1 cache (important!):
+
 ```python
 import fastf1
 fastf1.Cache.enable_cache('cache')
@@ -68,69 +42,91 @@ fastf1.Cache.enable_cache('cache')
 
 ---
 
+## 🚀 Quickstart Pipeline
+
+1. **Fetch race lap data**  
+   (FastF1 telemetry for Bahrain GPs)
+   ```bash
+   python scripts/fetch_races.py
+   ```
+
+2. **Fetch Ergast race results**  
+   (Top 5 finishers)
+   ```bash
+   python scripts/fetch_ergast_results.py
+   ```
+
+3. **Build the model dataset**  
+   (Match laps with podium drivers)
+   ```bash
+   python scripts/build_model_dataset.py
+   ```
+
+4. **Train machine learning models**  
+   (Linear, RandomForest, XGBoost)
+   ```bash
+   python scripts/train_model.py
+   ```
+
+5. **Simulate pit stop strategies**  
+   (Lap-by-lap race simulation)
+   ```bash
+   python scripts/strategy_simulator.py --model randomforest
+   ```
+
+---
+
 ## 🧠 Models Included
-- `LinearRegression`
-- `RandomForestRegressor`
-- `XGBoostRegressor`
-- `LSTM (Keras)`
-- `FLAML AutoML`
+- Linear Regression
+- Random Forest
+- XGBoost
 
-All models predict lap time based on compound, tyre age, stint length, and degradation.
+Each predicts **lap time** based on:
+- Tyre compound
+- Tyre age
+- Stint number
+- Tyre freshness
+- Track position
 
 ---
 
-## 📊 Strategy Simulator
-Simulates any given strategy like:
-```python
-[('SOFT', 17), ('HARD', 20), ('SOFT', 20)]
+## 🏎️ Strategy Simulator
+Simulates strategies like:
+
 ```
-And returns:
-- Total predicted race time
-- Lap-by-lap prediction
-- Visual strategy comparison
+Soft → Hard
+Hard → Soft
+Soft → Hard → Soft
+```
+
+and outputs:
+- Total race time prediction
+- Lap-by-lap predicted lap times
+- Best strategy recommendation
 
 ---
 
-## 📈 Visual Output
-![Example Plot](path/to/example_plot.png)  
-_Compare lap-by-lap lap times across strategies_
+## 📊 Visuals
+- Lap-by-lap strategy plot (`outputs/strategy_plot.png`)
+- CSVs with full lap predictions and best strategy times
+
+Example Plot:  
+(You can update with your own generated plot later!)
 
 ---
 
 ## 📋 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Licensed under the MIT License.
 
 ---
 
-## 💬 Want to Contribute?
-Open an issue or drop a PR! Contributions for strategy optimization logic, race weather models, or circuit-specific tuning are welcome.
+## 🛠️ Future Enhancements
+- Circuit-specific degradation modeling
+- Track temperature integration
+- Streamlit app for live race simulations
+- Reinforcement learning for pit timing
+- Optional pit stop penalty scoring (planned)
 
 ---
 
-## 🏁 Future Roadmap
-- [ ] Streamlit app for race selection and strategy comparison
-- [ ] Circuit-specific model tuning
-- [ ] Reinforcement learning-based pit timing
-- [ ] Include track temperature and fuel load in modeling
-
----
-🛠️ Future Work: Pit Stop Penalty Scoring
-In future updates, the strategy simulator will support custom scoring modes with optional pit stop penalties, including:
-
---scoring balanced: Use raw total time (default)
-
---scoring conservative: Penalize extra pit stops (e.g., +5s per stop)
-
---scoring robust: Factor in lap time variance and stop risk
-
-This will allow better strategy differentiation on:
-
-High-degradation circuits
-
-Tracks with long pit lanes
-
-Variable pit crew performance
-
-
-Built with ❤️ and race fuel by [@pranavvats32](https://github.com/pranavvats32)
-
+🏁 Built with ❤️ and race data by [@pranavvats32](https://github.com/pranavvats32)
