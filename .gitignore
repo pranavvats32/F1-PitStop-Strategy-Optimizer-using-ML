@@ -9,6 +9,6 @@ __pycache__/
 *.log
 *.DS_Store
 .env
-
+notebooks/
 # VS Code config (optional)
 .vscode/
