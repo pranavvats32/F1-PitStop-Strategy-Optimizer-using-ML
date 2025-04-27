@@ -110,9 +110,6 @@ and outputs:
 - Lap-by-lap strategy plot (`outputs/strategy_plot.png`)
 - CSVs with full lap predictions and best strategy times
 
-Example Plot:  
-(You can update with your own generated plot later!)
-
 ---
 
 ## 📋 License
